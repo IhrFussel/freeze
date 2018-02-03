@@ -86,7 +86,7 @@ end)
 minetest.register_chatcommand("freeze", {
     params = "<player>",
     description = "Freeze movement of a player",
-    privs = {moderator = true},
+    privs = {kick = true},
     func = function(name, param)
         local player = minetest.get_player_by_name(param)
 
@@ -105,7 +105,7 @@ minetest.register_chatcommand("freeze", {
 minetest.register_chatcommand("unfreeze", {
     params = "<player>",
         description = "Unfreeze movement of a player",
-        privs = {moderator = true},
+        privs = {kick = true},
         func = function(name, param)
 
         local player = minetest.get_player_by_name(param)
