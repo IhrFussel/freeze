@@ -7,7 +7,7 @@ minetest.register_entity("freeze:fe", {
     visual = "sprite",
     visual_size = {x=0.1, y=0.3},
     mesh = "model",
-    textures = {"freeze_t.png"}, -- number of required textures depends on visual
+    textures = {"freeze_t.png"},
     spritediv = {x=1, y=1.5},
     initial_sprite_basepos = {x=0, y=0},
     is_visible = true,
