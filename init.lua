@@ -2,7 +2,6 @@ local trap = nil
 local mode = nil
 
 minetest.register_entity("freeze:fe", {
-
     physical = true,
     collisionbox = {-0.1,-0.1,-0.1, 0.1,0.3,0.1},
     visual = "sprite",
@@ -15,119 +14,109 @@ minetest.register_entity("freeze:fe", {
     makes_footstep_sound = false,
     automatic_rotate = false,
 
-on_activate = function(self, staticdata)
+    on_activate = function(self, staticdata)
+        self.object:set_armor_groups({immortal = 1})
 
-self.object:set_armor_groups({immortal = 1})
+        if not trap or not mode or self.trapped then
+            return
+        end
 
-if not trap or not mode or self.trapped then
-return
-end
+        local playerobj = minetest.get_player_by_name(trap)
 
-local playerobj = minetest.get_player_by_name(trap)
+        if not playerobj then
+            return
+        end
 
-if not playerobj then
-return
-end
+        if mode == "a" then
+            playerobj:set_attach(self.object, "", {x=0,y=0,z=0}, {x=0,y=0,z=0})
+            minetest.chat_send_all("[Server]: "..trap.." can't move anymore.")
+            self.trapped = trap
 
-if mode == "a" then
-playerobj:set_attach(self.object, "", {x=0,y=0,z=0}, {x=0,y=0,z=0})
-minetest.chat_send_all("[Server]: "..trap.." can't move anymore.")
-self.trapped = trap
+            trap = nil
+            mode = nil
+        end
+    end,
 
-trap = nil
-mode = nil
-end
+    on_step = function(self,dtime)
+        if not trap or not mode then
+            return
+        end
 
-end,
+        if mode == "d" and trap == self.trapped then
+            local pobj = minetest.get_player_by_name(trap)
 
-on_step = function(self,dtime)
+            if not pobj then
+                return
+            end
 
-if not trap or not mode then
-return
-end
+            pobj:set_detach()
+            minetest.chat_send_all("[Server]: "..trap.." can move again.")
+            trap = nil
+            mode = nil
 
-if mode == "d" and trap == self.trapped then
-
-local pobj = minetest.get_player_by_name(trap)
-
-if not pobj then
-return
-end
-
-pobj:set_detach()
-minetest.chat_send_all("[Server]: "..trap.." can move again.")
-trap = nil
-mode = nil
-
-self.object:remove()
-
-end
-
-end,
+            self.object:remove()
+        end
+    end,
 })
 
 
 minetest.register_on_joinplayer(function(player)
+    local istrapped = player:get_attribute("freeze:istrapped")
 
-local istrapped = player:get_attribute("freeze:istrapped")
+    if istrapped then
+        trap = player:get_player_name()
+        mode = "a"
+        local pos = player:get_pos()
 
-if istrapped then
-trap = player:get_player_name()
-mode = "a"
-local pos = player:get_pos()
-
-minetest.after(0.3,function()
-minetest.add_entity(pos, "freeze:fe")
+        minetest.after(0.3,function()
+            minetest.add_entity(pos, "freeze:fe")
+        end)
+    end
 end)
 
-end
-
-end)
 
 minetest.register_on_leaveplayer(function(player)
-
-local ppos = player:get_pos()
-for _, obj in ipairs(minetest.get_objects_inside_radius(ppos, 2)) do
-obj:remove()
-end
-
+    local ppos = player:get_pos()
+    for _, obj in ipairs(minetest.get_objects_inside_radius(ppos, 2)) do
+        obj:remove()
+    end
 end)
 
+
 minetest.register_chatcommand("freeze", {
-params = "<player>",
+    params = "<player>",
     description = "Freeze movement of a player",
     privs = {moderator = true},
     func = function(name, param)
+        local player = minetest.get_player_by_name(param)
 
-local player = minetest.get_player_by_name(param)
+        if not player then
+            return true,"Player not online."
+        end
 
-if not player then
-return true,"Player not online."
-end
-
-trap = param
-mode = "a"
-player:set_attribute("freeze:istrapped","true")
-local pos = player:get_pos()
-minetest.add_entity(pos, "freeze:fe")
-end,
+        trap = param
+        mode = "a"
+        player:set_attribute("freeze:istrapped","true")
+        local pos = player:get_pos()
+        minetest.add_entity(pos, "freeze:fe")
+    end,
 })
 
 minetest.register_chatcommand("unfreeze", {
-params = "<player>",
-    description = "Unfreeze movement of a player",
-    privs = {moderator = true},
-    func = function(name, param)
+    params = "<player>",
+        description = "Unfreeze movement of a player",
+        privs = {moderator = true},
+        func = function(name, param)
 
-local player = minetest.get_player_by_name(param)
+        local player = minetest.get_player_by_name(param)
 
-if not player then
-return true,"Player not online."
-end
+        if not player then
+        return true,"Player not online."
+        end
 
-player:set_attribute("freeze:istrapped",nil)
+        player:set_attribute("freeze:istrapped",nil)
 
-trap = param
-mode = "d"
-end,
+        trap = param
+        mode = "d"
+    end,
 })
