@@ -1,5 +1,6 @@
 local trap = nil
 local mode = nil
+local scope = "public" -- Set scope of the chat message (public or private)
 
 minetest.register_entity("freeze:fe", {
     physical = true,
@@ -29,8 +30,14 @@ minetest.register_entity("freeze:fe", {
 
         if mode == "a" then
             playerobj:set_attach(self.object, "", {x=0,y=0,z=0}, {x=0,y=0,z=0})
-            minetest.chat_send_all("[Server]: "..trap.." can't move anymore.")
-            self.trapped = trap
+		
+		if scope == "public" then
+            	  minetest.chat_send_all("*** "..trap.." can't move anymore.")
+		else            
+		  minetest.chat_send_player(trap,"You cannot move anymore.")
+		end
+
+	    self.trapped = trap
 
             trap = nil
             mode = nil
@@ -50,7 +57,13 @@ minetest.register_entity("freeze:fe", {
             end
 
             pobj:set_detach()
-            minetest.chat_send_all("[Server]: "..trap.." can move again.")
+            
+	    if scope == "public" then
+                  minetest.chat_send_all("*** "..trap.." can move again.")
+            else
+                  minetest.chat_send_player(trap,"You cannot move now again.")
+            end
+
             trap = nil
             mode = nil
 
