@@ -61,7 +61,7 @@ minetest.register_entity("freeze:fe", {
 	    if scope == "public" then
                   minetest.chat_send_all("*** "..trap.." can move again.")
             else
-                  minetest.chat_send_player(trap,"You cannot move now again.")
+                  minetest.chat_send_player(trap,"You can move now again.")
             end
 
             trap = nil
