@@ -4,9 +4,9 @@ A Minetest mod that utilizes an entity to freeze player movement. The player get
 
 ## Usage (requires kick priv):
 
-/freeze <playername>
+/freeze playername
 
-/unfreeze <playername>
+/unfreeze playername
   
 ## This mod requires version >=0.4.16
 
