@@ -7,5 +7,7 @@ A Minetest mod that utilizes an entity to freeze player movement. The player get
 /freeze <playername>
 
 /unfreeze <playername>
+  
+## This mod requires version >=0.4.16
 
 
