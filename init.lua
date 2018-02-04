@@ -4,16 +4,12 @@ local scope = "public" -- Set scope of the chat message (public or private)
 
 minetest.register_entity("freeze:fe", {
     physical = true,
-    collisionbox = {-0.1,-0.1,-0.1, 0.1,0.3,0.1},
+    collisionbox = {-0.01,-0.01,-0.01, 0.01,0.01,0.01},
     visual = "sprite",
-    visual_size = {x=0.1, y=0.3},
-    mesh = "model",
+    visual_size = {x=0, y=0},
     textures = {"freeze_t.png"},
-    spritediv = {x=1, y=1.5},
-    initial_sprite_basepos = {x=0, y=0},
     is_visible = true,
     makes_footstep_sound = false,
-    automatic_rotate = false,
 
     on_activate = function(self, staticdata)
         self.object:set_armor_groups({immortal = 1})
@@ -106,6 +102,12 @@ minetest.register_chatcommand("freeze", {
         if not player then
             return true,"Player not online."
         end
+
+	local frozen = player:get_attribute("freeze:istrapped")
+
+	if frozen then
+	    return true,"Player is already frozen."
+	end
 
         trap = param
         mode = "a"
